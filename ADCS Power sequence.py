@@ -1,5 +1,5 @@
 #ADSC Power and State Second by second
-
+#
 #SLEEP_STATE
 SLEEP_STATE = 0
 SLEEP_POWERDRAW = 0
