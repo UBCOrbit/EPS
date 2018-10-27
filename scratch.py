@@ -2,7 +2,6 @@ import random
 
 def scratch(maxTime,passes):
     file= open("random.txt","w")
-    timePasses = []
 
     for s in range(0,passes):
         randTime = random.randint(0,maxTime-1)
@@ -12,11 +11,10 @@ def scratch(maxTime,passes):
 
             if (i == randTime):
                 time = 1
-                timePasses.append(randTime+(maxTime*s)+1)
             else:
                 time = 0
 
             file.write("%d %lf\n" %(time,rand))
-    return timePasses
+    file.close()
 
-print(scratch(5,3))
+scratch(5,3)

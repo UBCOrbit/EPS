@@ -2,14 +2,31 @@
 #Created on Oct 10, 2018
 #This is the main
 import sys
+from scratch import scratch
+import SingleOrbit as Single_Orbit
 
-def printToFile(Time, CDHPow, PayloadPow, COMMSPow, ADCSPow):
-    global file
-    if Time == 1:
-        file = open("Output.txt","w")
-        file.write("Time \t\t CDH \t Payload \t COMMS \t ADCS\n")
+def main():
+    timeOfPass = 90
+    NumOfPass = 5
+    powers = []
+    scratch(timeOfPass,NumOfPass) #Info of STK is obtained
 
-    file.write(" %3d  %6d %6d %6d  %6d \n" %(Time,CDHPow ,PayloadPow,COMMSPow, ADCSPow))
-    #file.write(Time CDHPow Payload COMMSPow, ADCSPow)
-printToFile(1,3,5,6,8)
-printToFile(2,52,36,95,3)
+    TakePhotoTime_Occurances = findOnFile(timeOfPass,NumOfPass)
+    TakePhotoTime = TakePhotoTime_Occurances[0]
+    Single_Orbit.SingleOrbitSimulation(TakePhotoTime)
+
+
+#Finds the places where a photo should be taken
+def findOnFile(Time,Num):
+    occurances = []
+    fileA = open("random.txt","r")
+    for i in range(0,Time*Num):
+        line = fileA.readline()
+
+        if (line[0] == "1"):
+            occurances.append(i+1)
+
+    fileA.close()
+    return occurances
+
+main()
