@@ -11,7 +11,7 @@ def main():
     for simTime in range(SECONDS_IN_AN_ORBIT):
         SetFlags(simTime)
         #payload
-        #ADCS 
+        #ADCS
         TOTAL_POWER_CONSUMED = TOTAL_POWER_CONSUMED + Payload.PayloadPower(simTime)
     print("Total Power consumed in Joules: " + str(TOTAL_POWER_CONSUMED/1000))
 
