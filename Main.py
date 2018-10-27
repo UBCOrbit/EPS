@@ -4,14 +4,14 @@
 import sys
 
 #Enter the season (Summer, Winter, Fall, Spring)
-#print sys.argv[1]
+print sys.argv[1]
 
 #Enter the Location
     #Northern hemisphere bright as NHB
     #Northern hemisphere dark as NHD
     #Southern hemisphere bright as SHB
     #Southern hemisphere dark as SHD
-#print sys.argv[2]
+print sys.argv[2]
 
 def printToFile(Time, CDHPow, PayloadPow, COMMSPow, ADCSPow):
     global file
