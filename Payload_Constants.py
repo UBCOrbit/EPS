@@ -34,6 +34,7 @@ payloadstartTime = -1
 def PayloadPower(sysTime):
     global payloadstartTime
 
+    #This sets a flag the frist time it's called so it knows how long it's been 'running' for
     if(Flags.takePhotoFlag == 0):
         return 0
     if(payloadstartTime == -1):
