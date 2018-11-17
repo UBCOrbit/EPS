@@ -1,31 +1,58 @@
-import Payload_Constants as Payload
-import Flags
+#Variables named something_time denote the time at which the action is started
+#Variables named something_duration denote the duration of the action
+#Eg. TAKE_PHOTO_TIME = 150 means to take a photo 150 seconds into the simulation and DETUMBLE_DURATION = 20 means that it takes 20 seconds to detumble
 
-SECONDS_IN_AN_ORBIT = 5400
-#TAKE_PHOTO_TIME = 10
+import Payload_Constants as PAYLOAD
+import Flags
+import COMMS_data as COMMS
+import CDH_Modes as CDH
+import ADCS_Power_sequence as ADCS
+
+
+SIMULATION_DURATION = 2400       #One full orbit is 5400 seconds
+TAKE_PHOTO_TIME = 900       #Takes a photo at simTime == TAKE_PHOTO_TIME seconds (eg 400 seconds into simulation)
 TOTAL_POWER_CONSUMED = 0
+TRANSMIT_TIME = 500     #Time at which the photo is downlinked to earth
+SLEEP_OUT_TIME = 10     #Time at which the Cubesat is awoken from orbital deployment state  #Set to 1800 seconds
 
 #Calculates the total power consumed per second
-def SingleOrbitSimulation(TAKE_PHOTO_TIME):
+#Loads the power for every second into unique subsystem lists with every second being an indiviudal element in the list
+def main():
+    print("    COMMS     CDH     PAYLOAD     ADCS")
     global TOTAL_POWER_CONSUMED
-    for simTime in range(SECONDS_IN_AN_ORBIT):
-        SetFlags(simTime,TAKE_PHOTO_TIME)
-        #payload
-        #ADCS
-        TOTAL_POWER_CONSUMED = TOTAL_POWER_CONSUMED + Payload.PayloadPower(simTime)
-        printToFile(simTime+1,50.0,30.0,20.0,20.0)
-    print("Total Power consumed in Joules: " + str(TOTAL_POWER_CONSUMED/1000))
-    return [100,200,500,300]
+    #subsystem lists
+    CDH_CONSUMPTION=[]
+    COMMS_CONSUMPTION=[]
+    PAYLOAD_CONSUMPTION=[]
+    ADCS_CONSUMPTION=[]
 
-#Sets the flags for each command at the correct time
-def SetFlags(simTime,TAKE_PHOTO_TIME):
-    if simTime == TAKE_PHOTO_TIME:
-        Flags.takePhotoFlag = 1
+    #Simulates mission time by incrementing a variable every loop, where one loop is one mission second
+    for simTime in range(SIMULATION_DURATION):              #One Orbit
+        transmission(simTime)    #Sets the values that a transmission from ground control would set
+        ADCS_power = ADCS.ADCS_power(simTime)       #Calls the ADCS power function and stores the vaule in a variable for printing later
+        ADCS_CONSUMPTION.append(ADCS_power)     #Stores the variable value in the ADCS list as a new element
+        COMMS_power = COMMS.commsPower(simTime)     #Repeats the above steps  for each subsystem
+        COMMS_CONSUMPTION.append(COMMS_power)
+        CDH_power = CDH.CDHPower(simTime)
+        CDH_CONSUMPTION.append(CDH_power)
+        PAYLOAD_power = PAYLOAD.PayloadPower(simTime)
+        PAYLOAD_CONSUMPTION.append(PAYLOAD_power)
 
-def printToFile(Time, CDHPow, PayloadPow, COMMSPow, ADCSPow):
-    global file
-    if Time == 1:
-        file = open("Output.txt","w")
-        file.write(" Time \t CDH \t Payload \t COMMS \t ADCS\n")
+        print("%d    %d          %d        %d             %d" % (simTime,COMMS_power,CDH_power,PAYLOAD_power,ADCS_power))       #Prints the values for that second in columns in units of millijoules
 
-    file.write(" %3.2lf  %6.2lf  %6.2lf  %6.2lf  %6.2lf \n" %(Time,CDHPow ,PayloadPow,COMMSPow, ADCSPow))
+
+
+
+    Total_Power = sum(CDH_CONSUMPTION) + sum(COMMS_CONSUMPTION) + sum(PAYLOAD_CONSUMPTION) + sum(ADCS_CONSUMPTION) #Sums all elements of every list to compute the total power
+    print("Total Power(J) =", Total_Power /1000)             #Total Power, divided by 1000 to change the units to Joules from millijoules
+
+#Sets the values that a transmisson from ground control would
+#Flags file is used to share information between the different python source files (Subsystems, etc)
+def transmission(simTime):
+    global SLEEP_OUT_TIME, TAKE_PHOTO_TIME, TRANSMIT_TIME
+    Flags.TAKE_PHOTO_TIME = TAKE_PHOTO_TIME
+    Flags.TRANSMIT_TIME = TRANSMIT_TIME
+    Flags.SLEEP_OUT_TIME = SLEEP_OUT_TIME
+
+
+main()

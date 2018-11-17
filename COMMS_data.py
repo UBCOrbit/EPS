@@ -1,15 +1,11 @@
 # Units are in milliWatt
 # Time is in seconds
 
-#import Flags
+import Flags
 
-# States
-COMMS_TRANSMIT = 0
-COMMS_SLEEP = 1
-COMMS_IDLE = 0
-SLEEP_OUT = 0
-
-state_timer = 0
+# States(3 states):  sleep, idle, transmit
+state = 'sleep'
+state_timer = -1
 
 # Idle waiting for
 idle_power_max = 540
@@ -20,54 +16,39 @@ idle_time = 90 * 60 - 90  # For all time except for 90s transmission
 sleep_power = 0
 
 # Transmit Picture
-transmit_time = 90
+transmit_duration = 90
 transmit_power = 3410  # Max and typical are similar values
 
+#This is the main function, it calls the statemachine updating function, SetFlags, and then returns a power consumption value depending on what the state is
+def commsPower(sysTime):
+    global state
 
-def commsPower():
-    global COMMS_TRANSMIT
-    global COMMS_SLEEP
-    global COMMS_IDLE
-    global SLEEP_OUT
+    setFlags(sysTime)
 
-    global state_timer
-
-    if COMMS_SLEEP == 1 and SLEEP_OUT == 1:
-        COMMS_SLEEP = 0
-        COMMS_IDLE = 1
-
-    if (COMMS_TRANSMIT == 1) and (state_timer >= transmit_time):
-        COMMS_TRANSMIT = 0
-        COMMS_IDLE = 1
-        state_timer = 0
-
-    if (COMMS_TRANSMIT == 1) and (COMMS_IDLE == 1):
-        COMMS_IDLE = 0
-        state_timer = 0
-
-    state_timer = state_timer + 1
-
-    if COMMS_TRANSMIT == 1:
+    #Reads the state and returns the power draw accordingly
+    if(state == 'transmitting'):
         return transmit_power
-
-    elif COMMS_SLEEP == 1:
+    elif(state == 'sleep'):
         return sleep_power
-
-    elif COMMS_IDLE == 1:
+    elif(state == 'idle'):
         return idle_power_typical
 
+#This is the statemachine update function
+def setFlags(sysTime):
+    global transmit_duration, state_timer, state
 
-def main():
-    global COMMS_TRANSMIT
-    global COMMS_SLEEP
-    global COMMS_IDLE
-    global SLEEP_OUT
+    #This sets a flag when the system starts to transmit and increments it every loop after that
+    if(Flags.COMMS_TRANSMIT == 1 and state_timer == -1):
+        state_timer = 0
+    elif(state_timer != -1):
+        state_timer = state_timer + 1
 
-    SLEEP_OUT = 1;
-
-    for t in range(0,150):
-        if t == 10:
-            COMMS_TRANSMIT = 1;
-
-        print(commsPower())
-main()
+    #This drives the statemachine
+    if state == 'sleep' and Flags.SLEEP_OUT == 1:       #'Wakes' the comms system when the sleep out flag is set to one
+        state = 'idle'
+    elif (Flags.COMMS_TRANSMIT == 1) and (state_timer >= transmit_duration):        #Checks to see how long comms has been transmitting and finishes the transmission if its been long enough
+        Flags.COMMS_TRANSMIT = 0
+        state_timer = -1        #resets the state_timer varaible to prepare it for another transmission
+        state = 'idle'
+    elif (Flags.COMMS_TRANSMIT == 1) and (state == 'idle'):
+        state = 'transmitting'

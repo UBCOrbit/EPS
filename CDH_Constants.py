@@ -40,3 +40,10 @@ Turn_OFFON_MCU = 10 / Turn_OFFON_MCU_Duration               #Assumed Value
 
 #MCs are put into low power Mode
 MC_Low_Power_Mode = PR_3_Typical
+
+#
+Idle = 50
+
+Receive_beginning = -1
+
+Receive_Duration = 30

@@ -1,40 +1,19 @@
-takePhotoFlag = 0
-Recieve_Flag_Comm = 1
-FLAG_Turn_ON_Payload = 0
-Flag_Signal_ADCS = 0
-FLAG_Receive_PayLoad =0
-Flag_Signal_COMMS= 0
-Flag_Latch_Up =0
+photo_taken_flag = 0         #Is set to 1 when payload has taken the photo
+PAYLOAD_BOOT = 0             #Is set to 1 when payload needs to begin the boot in order to be ready for the photo time
 
-# COMMS
-COMMSTRANSMIT = 0
-COMMSSLEEP = 1
-COMMSIDLE= 0
+Photo_in_CDH = 0             #Is set to 1 when CDH has finished downloading the photo from payload
+transmission_begun = 0       #Is set to 1 when the Cubesat has begun downlinking
+
+Recieve_Flag_Comm = 1        #Is set to 1 when the Cubesat receives a transmisson from ground control, currently defaults to immediately after awakening
+Flag_Latch_Up =0             #Is set to 1 when a latchup event occurs
+
+# COMMS (Under normal operation either transmitting or idling)
+COMMS_TRANSMIT = 0          #Is set to 1 when COMMS is actively downlinking to earth   
 
 #General
-SLEEPOUT = 0; # For signal turn on
+SLEEP_OUT = 0;              #Is set to 1 to exit orbital deployment state. Will begin booting and detumbling procedures
 
-#ADSC
-#Flags needed to be Pased through other system
-CDH_TAKE_PHOTO = 0
-CDH_TURN_ON = 0
-CDH_TAKE_PHOTO_FINISH = 0
-ADSC_POWER = 0
-
-#Global Variables which only used by ADSC
-SLEEP_STATE = 0
-SLEEP_POWERDRAW = 0
-SLEEP_TIME = 0
-
-DETUMBLING_STATE = 1
-DETUMBLING_STATE_POWER = 100   #assumption
-DETUMBLING_STATE_TIME = 10    #assumption
-
-COURSE_STATE = 2
-COURSE_STATE_POWER = 200       #assumption
-
-PICTURE_STATE = 3
-PICTURE_STATE_POWER = 500    #assumption
-
-ADSC_STATE = 0
-FIRST_TIME = 1              #use it in Detumbling state to calculate the power
+#Tranmission settable parameters
+TRANSMIT_TIME = 0          #We set this at time which the photo is downlinked to earth. (Can set this in SingleOrbit.py)
+SLEEP_OUT_TIME = 0         #We set this at time which the Cubesat exists orbital deployment state. (Can set this in SingleOrbit.py)
+TAKE_PHOTO_TIME = 0        #We set this at time which "simTime" takes a photo (Can set this in SingleOrbit.py)

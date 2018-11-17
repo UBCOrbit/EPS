@@ -1,116 +1,74 @@
-#ADSC Power and State Second by second
-#
+#ADCS Power and State Second by second
+import Flags
+
 #SLEEP_STATE
 SLEEP_STATE = 0
-SLEEP_POWERDRAW = 0
-SLEEP_TIME = 0
 
-#DETUMBLING_STATE
+#DETUMBLING_STATE (detumble after cubesat awakes from orbital deployment state )
 DETUMBLING_STATE = 1
-DETUMBLING_STATE_POWER = 100   #assumption
-DETUMBLING_STATE_TIME = 10    #assumption
+DETUMBLING_STATE_POWER = 1200       #assumption
+DETUMBLING_STATE_DURATION = 50      #assumption
 
-#COURSE_STATE
+#COURSE_STATE (maintains correct course in orbit)
 COURSE_STATE = 2
-COURSE_STATE_POWER = 200       #assumption
+COURSE_STATE_POWER = 150            #assumption
 COURSE_STATE_DURATION = 10000000    #ALWAYS
 
-#PICTURE_STATE
+#PICTURE_STATE (Gets set When Payload turns on)
 PICTURE_STATE = 3
-PICTURE_STATE_POWER = 500    #assumption
-PICTURE_STATE_DURATION = 100    #assumption
-
+PICTURE_STATE_POWER = 500           #assumption
+PICTURE_STATE_DURATION = 100        #assumption
 
 #need initial define in main function
-ADSC_STATE = SLEEP_STATE
-FIRST_TIME = 1
+ADCS_STATE = SLEEP_STATE
 
 #global variable
-CDH_TAKE_PHOTO = 0
-CDH_TURN_ON = 0
-CDH_TAKE_PHOTO_FINISH = 0
-SYSTEM_TIME = 0
-ADSC_POWER = 0
-ADSC_STATE = 0
+CDH_TURN_ON = 0                    #Is set to 1 when SLEEP_OUT is set to 1 (at time when exiting orbital deployment state.)
+ADCS_POWER = 0                     #Is set to different values deppending on ADCS state. (DETUMBLING_STATE_POWER, COURSE_STATE_POWER, PICTURE_STATE_POWER)
+ADCS_STATE = 0
+ADCS_start_time = -1
 
-#Main function is to simulate the ADSC_POWER_COMSUPTION function
-def main():
-    global ADSC_STATE, SLEEP_STATE, SYSTEM_TIME, ADSC_POWER, CDH_TURN_ON, CDH_TAKE_PHOTO, CDH_TAKE_PHOTO_FINISH
-    ADSC_STATE = SLEEP_STATE
-    for SYSTEM_TIME in range (0, 100):
-        ADSC_POWER_COMSUPTION(SYSTEM_TIME)
-        print ("ADSC Power comsumed: %d mJ"   % ADSC_POWER)
-#at 5 second, turn on the ADSC
-        if SYSTEM_TIME == 5:
-            CDH_TURN_ON = 1
-            print ("\nTURN ON ADSC, Start Detumbling")
+#Function calls ADCS_Power_consumption function and return power per second to main(singleOrbit.py)
+def ADCS_power(sysTime):
+    global ADCS_POWER, CDH_TURN_ON, ADCS_start_time
 
+    if(Flags.SLEEP_OUT == 0):              #Checking if Cubesat is in orbital deployment state. If so, output power = 0.
+        return 0
+    if(ADCS_start_time == -1):
+        ADCS_start_time = sysTime          #Save ADCS Start Time in simulation
+    ADCS_POWER_COMSUPTION(sysTime)
 
-#wait for the detumbling finish and at 40s, receive the take picture commond
-        if SYSTEM_TIME == 40:
-            CDH_TAKE_PHOTO_FINISH = 0
-            CDH_TAKE_PHOTO = 1
-            print ("\nTake Photo Now")
-
-#at 80s, finish taking picture, go back to the course state
-        if SYSTEM_TIME == 80:
-            CDH_TAKE_PHOTO = 0
-            CDH_TAKE_PHOTO_FINISH = 1
-            print ("\nFinish Take Photo, Move to Course")
-
-    print ("\n \nMission Finish!   The Total Power in ADSC is %d mW"  % ADSC_POWER)
+#Turn on CDH when cubesat awakes from orbital deployment state
+    if Flags.SLEEP_OUT == 1:
+        CDH_TURN_ON = 1
 
 
+    return ADCS_POWER  #Returns ADCS Power consumtion to main(singleOrbit.py)
 
 
-
-
-def ADSC_POWER_COMSUPTION (SYSTEM_TIME):
-    t0 = 0
-#Sleep state
-    global SLEEP_STATE, DETUMBLING_STATE, CDH_TURN_ON, FIRST_TIME, COURSE_STATE, ADSC_POWER, DETUMBLING_STATE_POWER, ADSC_STATE, PICTURE_STATE, CDH_TAKE_PHOTO_FINISH, CDH_TAKE_PHOTO
-
-    if ADSC_STATE == SLEEP_STATE:
+#ADCS Power Consumptiosns for different states
+def ADCS_POWER_COMSUPTION (sysTime):
+#Sleep State to Detumbling State
+    global SLEEP_STATE, DETUMBLING_STATE, CDH_TURN_ON, COURSE_STATE, ADCS_POWER, DETUMBLING_STATE_POWER, ADCS_STATE, PICTURE_STATE,ADCS_start_time
+    if ADCS_STATE == SLEEP_STATE:              #Checking if ADCS is in sleep state. If yes, do nothing.
         # DO NOTHING
-        if CDH_TURN_ON == 1:
-            ADSC_STATE = DETUMBLING_STATE
+        if CDH_TURN_ON == 1:                   #Checking if CDH is on. If yes, set ADCS State to detumbling state. This if is only checked if ADCS was previously in sleep state.
+            ADCS_STATE = DETUMBLING_STATE
 
+#Detumbling State to Course State
+    if ADCS_STATE == DETUMBLING_STATE:         #Checking if cubesat is in detumbling state.
+        if sysTime > DETUMBLING_STATE_DURATION + ADCS_start_time :   #Chekcing when to change ADCS state to course state. It waits until cubesat is done detumbling
+            ADCS_STATE = COURSE_STATE
+        ADCS_POWER = DETUMBLING_STATE_POWER    #Sets ADCS power to detumbling power consumption per second.
 
-#detumbling state
-    if ADSC_STATE == DETUMBLING_STATE:
-    # DO SOMETHING NOT SURE
-        if FIRST_TIME == 1:
-            t0 = SYSTEM_TIME
-            FIRST_TIME = 0
+#Course State to Picture State
+    if ADCS_STATE == COURSE_STATE:             #Checking if CubeSat is in Course state.
+        if Flags.PAYLOAD_BOOT == 1 and Flags.photo_taken_flag == 0:   #When payload turns on, ADCS goes into picture state to position cubesat for photo
+            ADCS_STATE = PICTURE_STATE
+        ADCS_POWER = COURSE_STATE_POWER        #Sets ADCS power to course state power consumption per second.
 
-        if SYSTEM_TIME >= DETUMBLING_STATE_TIME+t0:
-            ADSC_STATE = COURSE_STATE
-            FIRST_TIME = 1
-            print ("\nFinish Detumbling, Move to Course")
-        ADSC_POWER = ADSC_POWER + DETUMBLING_STATE_POWER     #accumulate ADSC power second by second
-
-
-
-#course state
-    if ADSC_STATE == COURSE_STATE:
-    # DO SOMETHING NOT SURE
-
-        if CDH_TAKE_PHOTO == 1:
-            ADSC_STATE = PICTURE_STATE
-
-        ADSC_POWER = ADSC_POWER + COURSE_STATE_POWER
-
-
-
-#picture state
-    if ADSC_STATE == PICTURE_STATE:
-    #DO SOMETHING NOT SURE
-
-        if CDH_TAKE_PHOTO_FINISH == 1:
-            ADSC_STATE = COURSE_STATE
-
-        ADSC_POWER = ADSC_POWER + PICTURE_STATE_POWER
-
-
-
-main()
+#Picture State to Course State
+    if ADCS_STATE == PICTURE_STATE:            #Checking if CubeSat is in Picture state.
+        if Flags.photo_taken_flag == 1:        #When Payload takes photo, ADCS goes back to course state.
+            ADCS_STATE = COURSE_STATE
+        ADCS_POWER =  PICTURE_STATE_POWER      #Sets ADCS power to picture state power consumption per second.
