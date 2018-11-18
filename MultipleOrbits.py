@@ -13,7 +13,7 @@ SIMULATION_DURATION =12500    #One full orbit is 5400 seconds
 TAKE_PHOTO_TIMES = [900,6300,11700]       #Takes a photo at simTime == TAKE_PHOTO_TIMES seconds (eg 400 seconds into simulation)
 TOTAL_POWER_CONSUMED = 0
 TRANSMIT_TIMES = [1300,6700,12100]     #Time at which the photo is downlinked to earth. Will default to ASAP if this time is set to something before the photo is taken (eg set transmit time to 200 and take photo time to 600, it will transmit as soon as CDH has the photo data)
-SLEEP_OUT_TIME = 10     #Time at which the Cubesat is awoken from orbital deployment state
+SLEEP_OUT_TIME = 10000     #Time at which the Cubesat is awoken from orbital deployment state
 PAYLOAD_BOOT_TIMES = []
 #Calculates the total power consumed per second
 #Loads the power for every second into unique subsystem lists with every second being an indiviudal element in the list
@@ -42,7 +42,7 @@ def main():
 
     Total_Power = sum(CDH_CONSUMPTION) + sum(COMMS_CONSUMPTION) + sum(PAYLOAD_CONSUMPTION) + sum(ADCS_CONSUMPTION) #Sums all elements of every list to compute the total power
 
-    print("Total Power(J) =", Total_Power /1000)             #Total Power, divided by 1000 to change the units to Joules from millijoules
+    print("Total Power =", Total_Power /1000, "J")             #Total Power, divided by 1000 to change the units to Joules from millijoules
 #Sets the values that a transmisson from ground control would
 #Flags file is used to share information between the different python source files (Subsystems, etc)
 def transmission():
@@ -69,13 +69,16 @@ def inputSanityCheck():
 
     for TAKE_PHOTO_TIME, TRANSMIT_TIME in zip(TAKE_PHOTO_TIMES,TRANSMIT_TIMES):
         orbit_number = orbit_number + 1
+        if TRANSMIT_TIME < SLEEP_OUT_TIME or TAKE_PHOTO_TIME < SLEEP_OUT_TIME:
+            print('\x1b[1;37;41m' + "ERROR!" + '\x1b[0m')       #Fancy String management to put a red box around the words in the middle
+            print('\x1b[1;37;41m' + "TRANSMISSION OR PHOTO SCHEDULED BEFORE AWAKENING" + '\x1b[0m')     #Fancy String management to put a red box around the words in the middle
         if TRANSMIT_TIME - TAKE_PHOTO_TIME > 5400:
             print('\x1b[1;37;41m' + "ERROR!" + '\x1b[0m')       #Fancy String management to put a red box around the words in the middle
             print('\x1b[1;37;41m' + "Transmit Time for Photo Time %d is after that orbit completes" % orbit_number + '\x1b[0m')     #Fancy String management to put a red box around the words in the middle
-        if TRANSMIT_TIME - TAKE_PHOTO_TIME < 0:
+        elif TRANSMIT_TIME - TAKE_PHOTO_TIME < 0:
             print('\x1b[1;37;41m' + "ERROR!" + '\x1b[0m')       #Fancy String management to put a red box around the words in the middle
             print('\x1b[1;37;41m' + "Transmit Time %d is before the photo is taken" %(orbit_number) + '\x1b[0m')        #Fancy String management to put a red box around the words in the middle
-        if TRANSMIT_TIME - TAKE_PHOTO_TIME < PAYLOAD.PHOTO_TO_CDH_DURATION_MAXIMUM:
+        elif TRANSMIT_TIME - TAKE_PHOTO_TIME < PAYLOAD.PHOTO_TO_CDH_DURATION_MAXIMUM:
             print('\x1b[1;37;41m' + "ERROR!" + '\x1b[0m')       #Fancy String management to put a red box around the words in the middle
             print('\x1b[1;37;41m' + "Transmit Time %d is before the photo has been transfered to CDH" %(orbit_number) + '\x1b[0m')      #Fancy String management to put a red box around the words in the middle
 

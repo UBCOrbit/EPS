@@ -38,7 +38,9 @@ def PayloadPower(sysTime):
     SetFlags(sysTime)
 
     #Reads the state and returns the power draw accordingly
-    if(state == 'booting'):
+    if(Flags.SLEEP_OUT == 0):
+        return POWER_OFF_POWERDRAW
+    elif(state == 'booting'):
         return (TURN_ON_POWERDRAW)
     elif(state == 'idling until photo'):
         return (IDLE_UNTIL_PHOTO_POWERDRAW)
