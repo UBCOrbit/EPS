@@ -43,7 +43,6 @@ def main():
     Total_Power = sum(CDH_CONSUMPTION) + sum(COMMS_CONSUMPTION) + sum(PAYLOAD_CONSUMPTION) + sum(ADCS_CONSUMPTION) #Sums all elements of every list to compute the total power
 
     print("Total Power(J) =", Total_Power /1000)             #Total Power, divided by 1000 to change the units to Joules from millijoules
-
 #Sets the values that a transmisson from ground control would
 #Flags file is used to share information between the different python source files (Subsystems, etc)
 def transmission():
@@ -65,16 +64,20 @@ def inputSanityCheck():
 
     orbit_number = 0
     if len(TAKE_PHOTO_TIMES) != len(TRANSMIT_TIMES):
-        print("Number of photos and transmits are not equal")
+        print('\x1b[1;37;41m' + "ERROR!" + '\x1b[0m')           #Fancy String management to put a red box around the words in the middle
+        print('\x1b[1;37;41m' + "Number of photos and transmits are not equal" + '\x1b[0m')         #Fancy String management to put a red box around the words in the middle
 
     for TAKE_PHOTO_TIME, TRANSMIT_TIME in zip(TAKE_PHOTO_TIMES,TRANSMIT_TIMES):
         orbit_number = orbit_number + 1
         if TRANSMIT_TIME - TAKE_PHOTO_TIME > 5400:
-            print("Transmit Time for Photo Time %d is after that orbit completes" % orbit_number)
+            print('\x1b[1;37;41m' + "ERROR!" + '\x1b[0m')       #Fancy String management to put a red box around the words in the middle
+            print('\x1b[1;37;41m' + "Transmit Time for Photo Time %d is after that orbit completes" % orbit_number + '\x1b[0m')     #Fancy String management to put a red box around the words in the middle
         if TRANSMIT_TIME - TAKE_PHOTO_TIME < 0:
-            print("Transmit Time %d is before the photo is taken" %(orbit_number))
+            print('\x1b[1;37;41m' + "ERROR!" + '\x1b[0m')       #Fancy String management to put a red box around the words in the middle
+            print('\x1b[1;37;41m' + "Transmit Time %d is before the photo is taken" %(orbit_number) + '\x1b[0m')        #Fancy String management to put a red box around the words in the middle
         if TRANSMIT_TIME - TAKE_PHOTO_TIME < PAYLOAD.PHOTO_TO_CDH_DURATION_MAXIMUM:
-            print("Transmit Time %d is before the photo has been transfered to CDH" %(orbit_number))
+            print('\x1b[1;37;41m' + "ERROR!" + '\x1b[0m')       #Fancy String management to put a red box around the words in the middle
+            print('\x1b[1;37;41m' + "Transmit Time %d is before the photo has been transfered to CDH" %(orbit_number) + '\x1b[0m')      #Fancy String management to put a red box around the words in the middle
 
 
 
