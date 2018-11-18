@@ -18,13 +18,13 @@ def setflags(sysTime):
     if sysTime == Flags.SLEEP_OUT_TIME:
             Flags.SLEEP_OUT = 1
 
-    #Begins the downlink of the photo, after checking the photo has be stored in the CDH ram. Will delay transmisson until CDH has finished aquiring the photo if transmission time is set to begin before CDH has the photo
-    if sysTime >= Flags.TRANSMIT_TIME and Flags.Photo_in_CDH == 1 and Flags.transmission_begun == 0:
+    #Begins the downlink of the photo, after checking the photo has be stored in the CDH ram.
+    if sysTime in Flags.TRANSMIT_TIMES and Flags.Photo_in_CDH == 1 and Flags.transmission_begun == 0:
             Flags.COMMS_TRANSMIT = 1
             Flags.transmission_begun = 1
 
-    #Starts the payload boot squence based on how long it takes to boot and how long it is set to idle before taking the photo
-    if(sysTime == (Flags.TAKE_PHOTO_TIME - PAYLOAD.TURN_ON_DURATION - PAYLOAD.IDLE_UNTIL_PHOTO_DURATION -1)):
+    #Starts the payload boot squence when appropriate 
+    if(sysTime in Flags.PAYLOAD_BOOT_TIMES):
         Flags.PAYLOAD_BOOT = 1
 
     #Recieves a transmission from ground control, currently set to receive immedately after awakening. Possibly subject to change

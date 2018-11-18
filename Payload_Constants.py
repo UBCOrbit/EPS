@@ -76,4 +76,5 @@ def SetFlags(sysTime):
     else:
         Flags.PAYLOAD_BOOT = 0          #Does some clean up with the flags
         Flags.photo_taken_flag = 0
+        payload_start_time = -1
         state = 'off'

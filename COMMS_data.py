@@ -48,6 +48,8 @@ def setFlags(sysTime):
         state = 'idle'
     elif (Flags.COMMS_TRANSMIT == 1) and (state_timer >= transmit_duration):        #Checks to see how long comms has been transmitting and finishes the transmission if its been long enough
         Flags.COMMS_TRANSMIT = 0
+        Flags.Photo_in_CDH = 0
+        Flags.transmission_begun = 0
         state_timer = -1        #resets the state_timer varaible to prepare it for another transmission
         state = 'idle'
     elif (Flags.COMMS_TRANSMIT == 1) and (state == 'idle'):

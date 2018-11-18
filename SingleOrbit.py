@@ -9,12 +9,12 @@ import CDH_Modes as CDH
 import ADCS_Power_sequence as ADCS
 
 
-SIMULATION_DURATION = 2400       #One full orbit is 5400 seconds
-TAKE_PHOTO_TIME = 900       #Takes a photo at simTime == TAKE_PHOTO_TIME seconds (eg 400 seconds into simulation)
+SIMULATION_DURATION = 5400      #One full orbit is 5400 seconds
+TAKE_PHOTO_TIME = [900]       #Takes a photo at simTime == TAKE_PHOTO_TIME seconds (eg 400 seconds into simulation)
 TOTAL_POWER_CONSUMED = 0
-TRANSMIT_TIME = 500     #Time at which the photo is downlinked to earth
-SLEEP_OUT_TIME = 10     #Time at which the Cubesat is awoken from orbital deployment state  #Set to 1800 seconds
-
+TRANSMIT_TIME = [1300]     #Time at which the photo is downlinked to earth. Will default to ASAP if this time is set to something before the photo is taken (eg set transmit time to 200 and take photo time to 600, it will transmit as soon as CDH has the photo data)
+SLEEP_OUT_TIME = 10     #Time at which the Cubesat is awoken from orbital deployment state
+PAYLOAD_BOOT_TIMES = []
 #Calculates the total power consumed per second
 #Loads the power for every second into unique subsystem lists with every second being an indiviudal element in the list
 def main():
@@ -50,8 +50,15 @@ def main():
 #Flags file is used to share information between the different python source files (Subsystems, etc)
 def transmission(simTime):
     global SLEEP_OUT_TIME, TAKE_PHOTO_TIME, TRANSMIT_TIME
+
+    if simTime == 0:        #Generates a list of time values that payload should boot at based on the times to take photos at
+        for times in TAKE_PHOTO_TIME:
+            boot_time = times - PAYLOAD.TURN_ON_DURATION - PAYLOAD.IDLE_UNTIL_PHOTO_DURATION -1
+            PAYLOAD_BOOT_TIMES.append(boot_time)
+
     Flags.TAKE_PHOTO_TIME = TAKE_PHOTO_TIME
-    Flags.TRANSMIT_TIME = TRANSMIT_TIME
+    Flags.PAYLOAD_BOOT_TIMES =  PAYLOAD_BOOT_TIMES
+    Flags.TRANSMIT_TIMES = TRANSMIT_TIME
     Flags.SLEEP_OUT_TIME = SLEEP_OUT_TIME
 
 
