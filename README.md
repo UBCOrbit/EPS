@@ -1,8 +1,8 @@
 # UBC-Orbit---EPS
 
-#Welcome to EPS Github
+Welcome to EPS Github
 
-#This contains files for different subsystem and a main that helps us create a file containing power simulation information
+This contains files for different subsystem and a main that helps us create a file containing power simulation information
 
 This program simulates the power consumption of a cubesat for every second for an arbitaray amount of time, photos taken and transmissions made
 
@@ -15,7 +15,7 @@ Each subsystem file is broken down into two parts, the statemachine function to 
 The main loop in MultipleOrbits.py calls the statemachine update function and then the power consumption calculation function of each subsystem in an arbitrary order. It then appends these values to a unique list for each subsystem and prints these lists to a text file called PowerConsumption.txt. It also performs some input sanity checks to ensure valid input data and will output error messages if they fail 
 
 
-#Style guidelines
+# Style guidelines
 
 All variables have an 'underscore' in them and no capital letters. e.g., space_variable or counter_
 
