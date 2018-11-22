@@ -71,18 +71,27 @@ def inputSanityCheck():
         if TRANSMIT_TIME < SLEEP_OUT_TIME or TAKE_PHOTO_TIME < SLEEP_OUT_TIME:
             print('\x1b[1;37;41m' + "ERROR!" + '\x1b[0m')       #Fancy String management to put a red box around the words in the middle
             print('\x1b[1;37;41m' + "TRANSMISSION OR PHOTO SCHEDULED BEFORE AWAKENING" + '\x1b[0m')     #Fancy String management to put a red box around the words in the middle
+            print('\x1b[1;37;41m' + "Photo Time %d: " % orbit_number + str(TAKE_PHOTO_TIME) + '\x1b[0m')
+            print('\x1b[1;37;41m' + "Transmission Time %d: " % orbit_number + str(TRANSMIT_TIME) + '\x1b[0m')
             sys.exit()
         if TRANSMIT_TIME - TAKE_PHOTO_TIME > 5400:
             print('\x1b[1;37;41m' + "ERROR!" + '\x1b[0m')       #Fancy String management to put a red box around the words in the middle
             print('\x1b[1;37;41m' + "Transmit Time for Photo Time %d is after that orbit completes" % orbit_number + '\x1b[0m')     #Fancy String management to put a red box around the words in the middle
+            print('\x1b[1;37;41m' + "Photo Time %d: " % orbit_number + str(TAKE_PHOTO_TIME) + '\x1b[0m')
+            print('\x1b[1;37;41m' + "Transmission Time %d: " % orbit_number + str(TRANSMIT_TIME) + '\x1b[0m')
             sys.exit()
         elif TRANSMIT_TIME - TAKE_PHOTO_TIME < 0:
             print('\x1b[1;37;41m' + "ERROR!" + '\x1b[0m')       #Fancy String management to put a red box around the words in the middle
             print('\x1b[1;37;41m' + "Transmit Time %d is before the photo is taken" %(orbit_number) + '\x1b[0m')        #Fancy String management to put a red box around the words in the middle
+            print('\x1b[1;37;41m' + "Photo Time %d: " % orbit_number + str(TAKE_PHOTO_TIME) + '\x1b[0m')
+            print('\x1b[1;37;41m' + "Transmission Time %d: " % orbit_number + str(TRANSMIT_TIME) + '\x1b[0m')
             sys.exit()
         elif TRANSMIT_TIME - TAKE_PHOTO_TIME < PAYLOAD.PHOTO_TO_CDH_DURATION_MAXIMUM:
             print('\x1b[1;37;41m' + "ERROR!" + '\x1b[0m')       #Fancy String management to put a red box around the words in the middle
-            print('\x1b[1;37;41m' + "Transmit Time %d is before the photo has been transfered to CDH" %(orbit_number) + '\x1b[0m')      #Fancy String management to put a red box around the words in the middle
+            print('\x1b[1;37;41m' + "Transmit Time %d is before the photo has been transfered to CDH" %(orbit_number) +'\x1b[0m')      #Fancy String management to put a red box around the words in the middle
+            print('\x1b[1;37;41m' + "Transmission Time should be at least %d seconds after the photo is taken" % PAYLOAD.PHOTO_TO_CDH_DURATION_MAXIMUM + '\x1b[0m')
+            print('\x1b[1;37;41m' + "Photo Time %d: " % orbit_number + str(TAKE_PHOTO_TIME) + '\x1b[0m')
+            print('\x1b[1;37;41m' + "Transmission Time %d: " % orbit_number + str(TRANSMIT_TIME) + '\x1b[0m')
             sys.exit()
 
 
