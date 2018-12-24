@@ -3,17 +3,18 @@
 #Eg. TAKE_PHOTO_TIMES = 150 means to take a photo 150 seconds into the simulation and DETUMBLE_DURATION = 20 means that it takes 20 seconds to detumble
 
 import Payload_Constants as PAYLOAD
-import Flags,sys
+import Flags,sys, random,math
 import COMMS_data as COMMS
 import CDH_Modes as CDH
 import ADCS_Power_sequence as ADCS
 
 
-SIMULATION_DURATION =31536000    #One full orbit is 5400 seconds
-TAKE_PHOTO_TIMES = [900,6300,11700]       #Takes a photo at simTime == TAKE_PHOTO_TIMES seconds (eg 400 seconds into simulation)
-TRANSMIT_TIMES = [1300,6700,12100]     #Time at which the photo is downlinked to earth.
+SIMULATION_DURATION =3600*24    #One full orbit is 5400 seconds
+TAKE_PHOTO_TIMES = []       #Takes a photo at simTime == TAKE_PHOTO_TIMES seconds (eg 400 seconds into simulation)
+TRANSMIT_TIMES = []     #Time at which the photo is downlinked to earth.
+NUMBER_OF_PHOTOS = 16
 SLEEP_OUT_TIME = 100     #Time at which the Cubesat is awoken from orbital deployment state
-PAYLOAD_BOOT_TIMES = []
+PAYLOAD_BOOT_TIMES = []     #Place holder array used to store calculated values
 #Calculates the total power consumed per second
 #Loads the power for every second into unique subsystem lists with every second being an indiviudal element in the list
 def main():
@@ -64,7 +65,7 @@ def transmission():
 
 def inputSanityCheck():
     global SLEEP_OUT_TIME, TAKE_PHOTO_TIMES, TRANSMIT_TIMES, PAYLOAD_BOOT_TIMES
-
+    parseData()
     orbit_number = 0
     if len(TAKE_PHOTO_TIMES) != len(TRANSMIT_TIMES):
         print('\x1b[1;37;41m' + "ERROR!" + '\x1b[0m')           #Fancy String management to put a red box around the words in the middle
@@ -98,7 +99,26 @@ def inputSanityCheck():
             print('\x1b[1;37;41m' + "Photo Time %d: " % orbit_number + str(TAKE_PHOTO_TIME) + '\x1b[0m')
             print('\x1b[1;37;41m' + "Transmission Time %d: " % orbit_number + str(TRANSMIT_TIME) + '\x1b[0m')
             sys.exit()
+        elif (TAKE_PHOTO_TIME >= SIMULATION_DURATION) or TRANSMIT_TIME >= SIMULATION_DURATION:
+            print('\x1b[1;37;41m' + "ERROR!" + '\x1b[0m')       #Fancy String management to put a red box around the words in the middle
+            print('\x1b[1;37;41m' + "Transmit Time or photo time %d is outside the simulation duration" %(orbit_number) +'\x1b[0m')      #Fancy String management to put a red box around the words in the middle
+            print('\x1b[1;37;41m' + "Simulation duration is %d" % SIMULATION_DURATION + '\x1b[0m')
+            print('\x1b[1;37;41m' + "Photo Time %d: " % orbit_number + str(TAKE_PHOTO_TIME) + '\x1b[0m')
+            print('\x1b[1;37;41m' + "Transmission Time %d: " % orbit_number + str(TRANSMIT_TIME) + '\x1b[0m')
+            
+            print("Maximum Number of photos possible: %d" %)
+            sys.exit()
 
+def parseData():
+    for t in range(NUMBER_OF_PHOTOS):
+        if t < 1:
+            photo = random.randrange(SLEEP_OUT_TIME, 5400*(t+1) - PAYLOAD.PHOTO_TO_CDH_DURATION_MAXIMUM)
+        else:
+            photo = random.randrange(5400*t, 5400*(t+1) - PAYLOAD.PHOTO_TO_CDH_DURATION_MAXIMUM)
+        TAKE_PHOTO_TIMES.append(photo)
+        transmit = random.randrange(photo + PAYLOAD.PHOTO_TO_CDH_DURATION_MAXIMUM, 5400*(t+1))
+        TRANSMIT_TIMES.append(transmit)
+        print(transmit)
 
 
 main()

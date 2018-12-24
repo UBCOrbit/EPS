@@ -2,11 +2,13 @@
 #Variables named something_duration denote the duration of the action
 #Eg. TAKE_PHOTO_TIME = 150 means to take a photo 150 seconds into the simulation and DETUMBLE_DURATION = 20 means that it takes 20 seconds to detumble
 
-import Payload_Constants as PAYLOAD
-import Flags
-import COMMS_data as COMMS
-import CDH_Modes as CDH
-import ADCS_Power_sequence as ADCS
+from Subsystems import Payload_Constants as PAYLOAD
+from Subsystems import Flags
+from Subsystems import COMMS_data as COMMS
+from Subsystems import CDH_Modes as CDH
+from Subsystems import ADCS_Power_sequence as ADCS
+import numpy as np
+import pandas as pd
 
 
 SIMULATION_DURATION = 5400      #One full orbit is 5400 seconds
@@ -14,11 +16,12 @@ TAKE_PHOTO_TIME = [900]       #Takes a photo at simTime == TAKE_PHOTO_TIME secon
 TOTAL_POWER_CONSUMED = 0
 TRANSMIT_TIME = [1300]     #Time at which the photo is downlinked to earth. Will default to ASAP if this time is set to something before the photo is taken (eg set transmit time to 200 and take photo time to 600, it will transmit as soon as CDH has the photo data)
 SLEEP_OUT_TIME = 10     #Time at which the Cubesat is awoken from orbital deployment state
-PAYLOAD_BOOT_TIMES = []
+PAYLOAD_BOOT_TIMES = []     #Place holder array used to store calculated values
 #Calculates the total power consumed per second
 #Loads the power for every second into unique subsystem lists with every second being an indiviudal element in the list
 def main():
     print("    COMMS     CDH     PAYLOAD     ADCS")
+    data = np.array([['SIMTIME', 'COMMS', 'CDH', 'PAYLOAD', 'ADCS']])
     global TOTAL_POWER_CONSUMED
     #subsystem lists
     CDH_CONSUMPTION=[]
@@ -60,6 +63,7 @@ def transmission(simTime):
     Flags.PAYLOAD_BOOT_TIMES =  PAYLOAD_BOOT_TIMES
     Flags.TRANSMIT_TIMES = TRANSMIT_TIME
     Flags.SLEEP_OUT_TIME = SLEEP_OUT_TIME
+
 
 
 main()

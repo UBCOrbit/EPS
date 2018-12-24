@@ -2,11 +2,11 @@
 #Variables named something_duration denote the duration of the action
 #Eg. TAKE_PHOTO_TIMES = 150 means to take a photo 150 seconds into the simulation and DETUMBLE_DURATION = 20 means that it takes 20 seconds to detumble
 
-import Payload_Constants as PAYLOAD
-import Flags,sys
-import COMMS_data as COMMS
-import CDH_Modes as CDH
-import ADCS_Power_sequence as ADCS
+from Subsystems import Payload_Constants as PAYLOAD
+from Subsystems import Flags,sys
+from Subsystems import COMMS_data as COMMS
+from Subsystems import CDH_Modes as CDH
+from Subsystems import ADCS_Power_sequence as ADCS
 
 
 SIMULATION_DURATION =12500    #One full orbit is 5400 seconds
