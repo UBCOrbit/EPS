@@ -20,7 +20,7 @@ PAYLOAD_BOOT_TIMES = []     #Place holder array used to store calculated values
 #Calculates the total power consumed per second
 #Loads the power for every second into unique subsystem lists with every second being an indiviudal element in the list
 def main():
-    print("    COMMS     CDH     PAYLOAD     ADCS")
+    print("\t COMMS \t CDH \t PAYLD \t ADCS")
     data = np.array([['SIMTIME', 'COMMS', 'CDH', 'PAYLOAD', 'ADCS']])
     global TOTAL_POWER_CONSUMED
     #subsystem lists
@@ -41,13 +41,13 @@ def main():
         PAYLOAD_power = PAYLOAD.PayloadPower(simTime)
         PAYLOAD_CONSUMPTION.append(PAYLOAD_power)
 
-        print("%d    %d          %d        %d             %d" % (simTime,COMMS_power,CDH_power,PAYLOAD_power,ADCS_power))       #Prints the values for that second in columns in units of millijoules
+        print("%d \t %d \t %d \t %d \t %d" % (simTime,COMMS_power,CDH_power,PAYLOAD_power,ADCS_power))       #Prints the values for that second in columns in units of millijoules
 
 
 
 
     Total_Power = sum(CDH_CONSUMPTION) + sum(COMMS_CONSUMPTION) + sum(PAYLOAD_CONSUMPTION) + sum(ADCS_CONSUMPTION) #Sums all elements of every list to compute the total power
-    print("Total Power(J) =", Total_Power /1000)             #Total Power, divided by 1000 to change the units to Joules from millijoules
+    print("Total Power(W) =", Total_Power /1000)             #Total Power, divided by 1000 to change the units to Joules from millijoules
 
 #Sets the values that a transmisson from ground control would
 #Flags file is used to share information between the different python source files (Subsystems, etc)

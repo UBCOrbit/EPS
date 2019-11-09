@@ -2,14 +2,14 @@
 #Created on Oct 10, 2018
 #This is the main
 import sys
-from scratch import scratch
+#from scratch import scratch
 import SingleOrbit as Single_Orbit
 
 def main():
     timeOfPass = 90
     NumOfPass = 5
     powers = []
-    scratch(timeOfPass,NumOfPass) #Info of STK is obtained
+    #scratch(timeOfPass,NumOfPass) #Info of STK is obtained
 
     TakePhotoTime_Occurances = findOnFile(timeOfPass,NumOfPass)
     TakePhotoTime = TakePhotoTime_Occurances[0]

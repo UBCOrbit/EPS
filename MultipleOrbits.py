@@ -3,10 +3,11 @@
 #Eg. TAKE_PHOTO_TIMES = 150 means to take a photo 150 seconds into the simulation and DETUMBLE_DURATION = 20 means that it takes 20 seconds to detumble
 
 from Subsystems import Payload_Constants as PAYLOAD
-from Subsystems import Flags,sys
+from Subsystems import Flags
 from Subsystems import COMMS_data as COMMS
 from Subsystems import CDH_Modes as CDH
 from Subsystems import ADCS_Power_sequence as ADCS
+import sys
 
 
 SIMULATION_DURATION =12500    #One full orbit is 5400 seconds
